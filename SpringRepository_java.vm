@@ -5,8 +5,13 @@ import org.springframework.data.repository.NoRepositoryBean;
 import org.springframework.data.repository.PagingAndSortingRepository;
 import ${ROOT_PKG}.$fn.toLowerCase("${entity.name}").${entity.name};
 
+#set($keyAttributeType = 'Long')
+##set($recordClass    = "${entity.name}Record" )
+#if(${entity.keyAttributesCount} == 1)
+    #set($keyAttributeType = ${entity.keyAttribute.simpleType})
+#end
 @NoRepositoryBean
-public interface ${entity.name}RepositoryGen extends PagingAndSortingRepository<${entity.name}, ${entity.keyAttribute.simpleType}> {
+public interface ${entity.name}RepositoryGen extends PagingAndSortingRepository<${entity.name}, ${keyAttributeType}> {
 ##@Override
 ##@EntityGraph(attributePaths = {"tableList"})
 ##Iterable<Database> findAll();

@@ -12,8 +12,18 @@ public abstract class ${entity.name}Gen {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+#if(${entity.keyAttributesCount} == 1)
     @Column(name = "${entity.keyAttribute.databaseName}")
     private ${entity.keyAttribute.simpleType} ${entity.keyAttribute.name};
+#else
+    @Column(name = "ID_$fn.toUpperCase(${entity.name})")
+    private Long id${entity.name};
+    #foreach($field in ${entity.keyAttributes})
+
+    @Column(name = "${field.databaseName}")
+    private ${field.simpleType} ${field.name};
+    #end
+#end
 #foreach( $field in $entity.nonKeyAttributes )
     #if($field.isFK())
 
