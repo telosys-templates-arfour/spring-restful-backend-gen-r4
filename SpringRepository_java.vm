@@ -1,0 +1,13 @@
+#checkId($entity)
+package ${target.javaPackageFromFolder($SRC)};
+
+import org.springframework.data.repository.NoRepositoryBean;
+import org.springframework.data.repository.PagingAndSortingRepository;
+import ${ROOT_PKG}.$fn.toLowerCase("${entity.name}").${entity.name};
+
+@NoRepositoryBean
+public interface ${entity.name}RepositoryGen extends PagingAndSortingRepository<${entity.name}, ${entity.keyAttribute.simpleType}> {
+##@Override
+##@EntityGraph(attributePaths = {"tableList"})
+##Iterable<Database> findAll();
+}

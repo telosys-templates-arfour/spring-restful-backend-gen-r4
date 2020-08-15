@@ -1,0 +1,39 @@
+#checkId($entity)
+package ${target.javaPackageFromFolder($SRC)};
+
+import lombok.*;
+
+import javax.persistence.*;
+
+@Getter
+@Setter
+@MappedSuperclass
+public abstract class ${entity.name}Gen {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "${entity.keyAttribute.databaseName}")
+    private ${entity.keyAttribute.simpleType} ${entity.keyAttribute.name};
+#foreach( $field in $entity.nonKeyAttributes )
+    #if($field.isFK())
+
+    @ManyToOne(cascade = { CascadeType.MERGE, CascadeType.PERSIST })
+    @JoinColumn(name = "${field.databaseName}", referencedColumnName = "${field.databaseName}")
+    private ${ROOT_PKG}.${fn.toLowerCase("${field.referencedEntity.name}")}.${field.referencedEntity.name} ${fn.uncapitalize(${field.referencedEntity.name})};
+    #else
+
+    @Column(name = "${field.databaseName}")
+    private $field.simpleType $field.name;
+    #end
+#end
+#foreach($link in $entity.links)
+    #if($link.isCardinalityOneToMany())
+
+    @${link.cardinality}(mappedBy = "${fn.uncapitalize(${entity.name})}",
+    targetEntity = ${ROOT_PKG}.${fn.toLowerCase(${link.targetEntity.name})}.${link.targetEntitySimpleType}.class,
+    fetch = FetchType.LAZY,cascade = { CascadeType.MERGE, CascadeType.PERSIST })
+    private java.util.List<${ROOT_PKG}.${fn.toLowerCase(${link.targetEntity.name})}.${link.targetEntitySimpleType}> ${fn.uncapitalize(${link.targetEntity.name})}List;
+    #end
+#end
+
+}
