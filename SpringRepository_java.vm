@@ -1,6 +1,17 @@
 #checkId($entity)
 package ${target.javaPackageFromFolder($SRC)};
+#set($importsFK = false)
+#foreach( $field in $entity.nonKeyAttributes )
+    #if($field.isFK() && ${field.referencedEntity.keyAttributesCount} == 1 )
+        #set($importsFK = true)
+    #end
+#end
+#if($importsFK == true)
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.repository.query.Param;
+#end
 import org.springframework.data.repository.NoRepositoryBean;
 import org.springframework.data.repository.PagingAndSortingRepository;
 import ${ROOT_PKG}.$fn.toLowerCase("${entity.name}").${entity.name};
@@ -15,4 +26,11 @@ public interface ${entity.name}RepositoryGen extends PagingAndSortingRepository<
 ##@Override
 ##@EntityGraph(attributePaths = {"tableList"})
 ##Iterable<Database> findAll();
+#foreach( $field in $entity.nonKeyAttributes )
+#if($field.isFK() && ${field.referencedEntity.keyAttributesCount} == 1 )
+    #set($fkKeyName= ${field.referencedEntity.keyAttribute.name})
+
+    Page<${entity.name}> findBy${field.referencedEntity.name}_$fn.capitalize(${fkKeyName})(@Param("${fkKeyName}") Long ${fkKeyName}, Pageable pageable);
+#end
+#end
 }
