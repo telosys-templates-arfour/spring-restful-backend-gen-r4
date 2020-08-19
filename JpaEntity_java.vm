@@ -26,10 +26,12 @@ public abstract class ${entity.name}Gen {
 #end
 #foreach( $field in $entity.nonKeyAttributes )
     #if($field.isFK())
+        #if(${field.referencedEntity.keyAttributesCount} == 1)
 
-    @ManyToOne(cascade = { CascadeType.MERGE, CascadeType.PERSIST })
-    @JoinColumn(name = "${field.databaseName}", referencedColumnName = "${field.databaseName}")
-    private ${ROOT_PKG}.${fn.toLowerCase("${field.referencedEntity.name}")}.${field.referencedEntity.name} ${fn.uncapitalize(${field.referencedEntity.name})};
+        @ManyToOne(cascade = { CascadeType.MERGE, CascadeType.PERSIST })
+        @JoinColumn(name = "${field.databaseName}", referencedColumnName = "${field.referencedEntity.keyAttribute.databaseName}")
+        private ${ROOT_PKG}.${fn.toLowerCase("${field.referencedEntity.name}")}.${field.referencedEntity.name} ${fn.uncapitalize(${field.referencedEntity.name})};
+        #end
     #else
 
     @Column(name = "${field.databaseName}")
