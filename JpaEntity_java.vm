@@ -12,12 +12,14 @@ public abstract class ${entity.name}Gen {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+#set($entityIdStr = "id${entity.name}")
 #if(${entity.keyAttributesCount} == 1)
+#set($entityIdStr = ${entity.keyAttribute.name})
     @Column(name = "${entity.keyAttribute.databaseName}")
-    private ${entity.keyAttribute.simpleType} ${entity.keyAttribute.name};
+    private ${entity.keyAttribute.simpleType} $entityIdStr;
 #else
     @Column(name = "ID_$fn.toUpperCase(${entity.name})")
-    private Long id${entity.name};
+    private Long ${entityIdStr};
     #foreach($field in ${entity.keyAttributes})
 
     @Column(name = "${field.databaseName}")
@@ -47,6 +49,7 @@ public abstract class ${entity.name}Gen {
 #end
 #foreach( $field in $entity.nonKeyAttributes )
     #if($field.isFK() && ${field.referencedEntity.keyAttributesCount} == 1)
+        #if($entityIdStr != ${field.referencedEntity.keyAttribute.name})
 
     public ${field.referencedEntity.keyAttribute.type} get${fn.capitalize(${field.referencedEntity.keyAttribute.name})}() {
         if (this.${fn.uncapitalize(${field.referencedEntity.name})} != null) {
@@ -54,6 +57,7 @@ public abstract class ${entity.name}Gen {
         }
         return null;
     }
+        #end
     #end
 #end
 
