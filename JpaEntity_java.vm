@@ -25,13 +25,11 @@ public abstract class ${entity.name}Gen {
     #end
 #end
 #foreach( $field in $entity.nonKeyAttributes )
-    #if($field.isFK())
-        #if(${field.referencedEntity.keyAttributesCount} == 1)
+    #if($field.isFK() && ${field.referencedEntity.keyAttributesCount} == 1)
 
-        @ManyToOne(cascade = { CascadeType.MERGE, CascadeType.PERSIST })
-        @JoinColumn(name = "${field.databaseName}", referencedColumnName = "${field.referencedEntity.keyAttribute.databaseName}")
-        private ${ROOT_PKG}.${fn.toLowerCase("${field.referencedEntity.name}")}.${field.referencedEntity.name} ${fn.uncapitalize(${field.referencedEntity.name})};
-        #end
+    @ManyToOne(cascade = {CascadeType.MERGE, CascadeType.PERSIST})
+    @JoinColumn(name = "${field.databaseName}", referencedColumnName = "${field.referencedEntity.keyAttribute.databaseName}")
+    private ${ROOT_PKG}.${fn.toLowerCase("${field.referencedEntity.name}")}.${field.referencedEntity.name} ${fn.uncapitalize(${field.referencedEntity.name})};
     #else
 
     @Column(name = "${field.databaseName}")
@@ -42,9 +40,17 @@ public abstract class ${entity.name}Gen {
     #if($link.isCardinalityOneToMany())
 
     @${link.cardinality}(mappedBy = "${fn.uncapitalize(${entity.name})}",
-    targetEntity = ${ROOT_PKG}.${fn.toLowerCase(${link.targetEntity.name})}.${link.targetEntitySimpleType}.class,
-    fetch = FetchType.LAZY,cascade = { CascadeType.MERGE, CascadeType.PERSIST })
+            targetEntity = ${ROOT_PKG}.${fn.toLowerCase(${link.targetEntity.name})}.${link.targetEntitySimpleType}.class,
+            fetch = FetchType.LAZY, cascade = {CascadeType.MERGE, CascadeType.PERSIST})
     private java.util.List<${ROOT_PKG}.${fn.toLowerCase(${link.targetEntity.name})}.${link.targetEntitySimpleType}> ${fn.uncapitalize(${link.targetEntity.name})}List;
+    #end
+#end
+#foreach( $field in $entity.nonKeyAttributes )
+    #if($field.isFK() && ${field.referencedEntity.keyAttributesCount} == 1)
+
+    public ${field.referencedEntity.keyAttribute.type} get${fn.capitalize(${field.referencedEntity.keyAttribute.name})}() {
+        return this.${fn.uncapitalize(${field.referencedEntity.name})}.get${fn.capitalize(${field.referencedEntity.keyAttribute.name})}();
+    }
     #end
 #end
 
