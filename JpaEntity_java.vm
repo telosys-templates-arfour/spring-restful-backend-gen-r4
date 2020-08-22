@@ -49,7 +49,10 @@ public abstract class ${entity.name}Gen {
     #if($field.isFK() && ${field.referencedEntity.keyAttributesCount} == 1)
 
     public ${field.referencedEntity.keyAttribute.type} get${fn.capitalize(${field.referencedEntity.keyAttribute.name})}() {
-        return this.${fn.uncapitalize(${field.referencedEntity.name})}.get${fn.capitalize(${field.referencedEntity.keyAttribute.name})}();
+        if (this.${fn.uncapitalize(${field.referencedEntity.name})} != null) {
+            return this.${fn.uncapitalize(${field.referencedEntity.name})}.get${fn.capitalize(${field.referencedEntity.keyAttribute.name})}();
+        }
+        return null;
     }
     #end
 #end
