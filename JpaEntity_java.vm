@@ -49,15 +49,13 @@ public abstract class ${entity.name}Gen {
 #end
 #foreach( $field in $entity.nonKeyAttributes )
     #if($field.isFK() && ${field.referencedEntity.keyAttributesCount} == 1)
-        #if($entityIdStr != ${field.referencedEntity.keyAttribute.name})
 
-    public ${field.referencedEntity.keyAttribute.type} get${fn.capitalize(${field.referencedEntity.keyAttribute.name})}() {
+    public ${field.referencedEntity.keyAttribute.type} get${fn.capitalize(${field.name})}() {
         if (this.${fn.uncapitalize(${field.referencedEntity.name})} != null) {
             return this.${fn.uncapitalize(${field.referencedEntity.name})}.get${fn.capitalize(${field.referencedEntity.keyAttribute.name})}();
         }
         return null;
     }
-        #end
     #end
 #end
 
